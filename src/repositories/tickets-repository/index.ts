@@ -1,7 +1,13 @@
 import { prisma } from "@/config";
+import { TicketType } from "@prisma/client";
 
 async function create() {
   return "null";
 }
 
-export const ticketsRepository = { create };
+async function findAllTypes(): Promise<TicketType[]> {
+  return await prisma.ticketType.findMany();
+}
+
+const ticketsRepository = { create, findAllTypes };
+export default ticketsRepository;
