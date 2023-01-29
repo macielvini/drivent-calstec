@@ -1,10 +1,6 @@
 import { prisma } from "@/config";
 import { TicketType } from "@prisma/client";
 
-async function create() {
-  return "null";
-}
-
 export type TicketResponse = {
   id: number;
   status: string; //RESERVED | PAID
@@ -25,26 +21,28 @@ export type TicketResponse = {
 
 export type TicketResponseArr = TicketResponse[];
 
-async function findTicketByUserId(id: number): Promise<TicketResponse> {
-  const data = (await prisma.$queryRaw`
-    select t.id, t.status, t."ticketTypeId", t."enrollmentId", t."createdAt", t."updatedAt",
-	    json_build_object(
-        'id', tt.id,
-        'name', tt.name,
-        'price', tt.price,
-        'isRemote', tt."isRemote",
-        'includesHotel', tt."includesHotel",
-        'createdAt', tt."createdAt",
-        'updatedAt', tt."updatedAt"
-    ) AS "TicketType"
-    from "Enrollment" e
-    left join "Ticket" t
-    on e.id = t."enrollmentId"
-    left join "TicketType" tt
-    on t."ticketTypeId" = tt.id
-    where e."userId" = ${id};`) as TicketResponseArr;
+export type CreateTicketParams = {
+  ticketTypeId: number;
+  enrollmentId: number;
+};
 
-  return data[0];
+async function create(ticketParams: CreateTicketParams) {
+  const { ticketTypeId, enrollmentId } = ticketParams;
+
+  const data = await prisma.ticket.create({
+    data: { ticketTypeId: ticketTypeId, enrollmentId: enrollmentId, status: "PAID" },
+  });
+
+  return data;
+}
+
+async function findTicketByUserId(id: number) {
+  const data = await prisma.ticket.findFirst({
+    where: { enrollmentId: id },
+    include: { TicketType: true },
+  });
+
+  return data;
 }
 
 async function findAllTypes(): Promise<TicketType[]> {

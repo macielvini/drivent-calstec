@@ -29,9 +29,19 @@ export type RequestError = {
 };
 
 export type Ticket = {
+  id: number;
+  status: string;
   ticketTypeId: number;
   enrollmentId: number;
-  status: string;
+  TicketType: {
+    id: number;
+    name: string;
+    price: number;
+    isRemote: boolean;
+    includesHotel: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  };
   createdAt: Date;
   updatedAt: Date;
 };

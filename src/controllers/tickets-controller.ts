@@ -4,9 +4,16 @@ import ticketsServices from "@/services/tickets-service";
 import { AuthenticatedRequest } from "@/middlewares";
 
 export async function ticketsPost(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const { ticketTypeId } = req.body;
   try {
-    res.sendStatus(200);
+    const data = ticketsServices.create(Number(userId), Number(ticketTypeId));
+
+    res.status(201).send(data);
   } catch (error) {
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(404);
+    }
     res.sendStatus(500);
   }
 }
