@@ -50,5 +50,9 @@ async function findAllTypes(): Promise<TicketType[]> {
   return await prisma.ticketType.findMany();
 }
 
-const ticketsRepository = { create, findAllTypes, findTicketByUserId };
+async function findTicketById(id: number) {
+  return await prisma.ticket.findUnique({ where: { id: id } });
+}
+
+const ticketsRepository = { create, findAllTypes, findTicketByUserId, findTicketById };
 export default ticketsRepository;

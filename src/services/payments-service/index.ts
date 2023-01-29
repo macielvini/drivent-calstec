@@ -1,12 +1,18 @@
-import { notFoundError } from "@/errors";
+import { notFoundError, unauthorizedError } from "@/errors";
+import enrollmentRepository from "@/repositories/enrollment-repository";
 import paymentsRepository from "@/repositories/payments-repository";
+import ticketsRepository from "@/repositories/tickets-repository";
 
-async function getPaymentWithTicketId(id: number) {
-  const data = await paymentsRepository.findWithTicketId(id);
+async function getPaymentWithTicketId(userId: number, ticketId: number) {
+  const paymentInfo = await paymentsRepository.findWithTicketId(ticketId);
+  const enrollment = await enrollmentRepository.findUserEnrollment(userId);
+  const ticket = await ticketsRepository.findTicketById(ticketId);
 
-  if (!data || !data.id) throw notFoundError();
+  if (!ticket) throw notFoundError();
 
-  return data;
+  if (ticket.enrollmentId !== enrollment.id) throw unauthorizedError();
+
+  return paymentInfo;
 }
 
 const paymentsServices = { getPaymentWithTicketId };
