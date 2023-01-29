@@ -4,7 +4,7 @@ import paymentsRepository from "@/repositories/payments-repository";
 async function getPaymentWithTicketId(id: number) {
   const data = await paymentsRepository.findWithTicketId(id);
 
-  if (!data) throw notFoundError();
+  if (!data || !data.id) throw notFoundError();
 
   return data;
 }

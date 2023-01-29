@@ -1,8 +1,9 @@
+import { getInfo } from "@/controllers/payments-controller";
 import { authenticateToken } from "@/middlewares";
 import { Router } from "express";
 
 const paymentsRouter = Router();
 
-paymentsRouter.all("/*", authenticateToken);
+paymentsRouter.all("/*", authenticateToken).get("/", getInfo);
 
 export { paymentsRouter };
