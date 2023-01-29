@@ -30,7 +30,8 @@ async function create(ticketParams: CreateTicketParams) {
   const { ticketTypeId, enrollmentId } = ticketParams;
 
   const data = await prisma.ticket.create({
-    data: { ticketTypeId: ticketTypeId, enrollmentId: enrollmentId, status: "PAID" },
+    data: { enrollmentId: enrollmentId, ticketTypeId: ticketTypeId, status: "RESERVED" },
+    include: { TicketType: true },
   });
 
   return data;

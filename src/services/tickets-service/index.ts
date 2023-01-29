@@ -1,17 +1,18 @@
 import { notFoundError } from "@/errors";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketsRepository from "@/repositories/tickets-repository";
-import enrollmentsService from "@/services/enrollments-service";
 
 export async function create(userId: number, ticketTypeId: number) {
-  const enrollment = await enrollmentsService.getOneWithAddressByUserId(userId);
+  const enrollment = await enrollmentRepository.findUserEnrollment(userId);
+
+  if (!enrollment) throw notFoundError();
 
   const ticketParams = {
     enrollmentId: enrollment.id,
     ticketTypeId: ticketTypeId,
   };
 
-  await ticketsRepository.create(ticketParams);
+  return await ticketsRepository.create(ticketParams);
 }
 
 async function findTicketTypes() {

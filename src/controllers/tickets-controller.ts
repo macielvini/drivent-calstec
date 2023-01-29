@@ -7,7 +7,7 @@ export async function ticketsPost(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
   const { ticketTypeId } = req.body;
   try {
-    const data = ticketsServices.create(Number(userId), Number(ticketTypeId));
+    const data = await ticketsServices.create(Number(userId), Number(ticketTypeId));
 
     res.status(201).send(data);
   } catch (error) {
@@ -33,11 +33,6 @@ export async function getTicketByUserId(req: AuthenticatedRequest, res: Response
 
   try {
     const ticketData = await ticketsServices.findTicketByUserId(Number(userId));
-
-    //FIX: ticketData date format
-    //expected: "createdAt": "2023-01-28T21:42:46.578Z",
-    //received: "updatedAt": "2023-01-28T21:42:46.573",
-
     res.status(200).send(ticketData);
   } catch (error) {
     if (error.name === "NotFoundError") {
