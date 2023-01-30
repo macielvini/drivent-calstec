@@ -51,7 +51,7 @@ async function findAllTypes(): Promise<TicketType[]> {
 }
 
 async function findTicketById(id: number) {
-  return await prisma.ticket.findUnique({ where: { id: id } });
+  return await prisma.ticket.findUnique({ where: { id: id }, include: { TicketType: true } });
 }
 
 const ticketsRepository = { create, findAllTypes, findTicketByUserId, findTicketById };
