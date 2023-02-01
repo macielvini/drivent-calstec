@@ -1,43 +1,45 @@
-import { Response } from "express";
-
-import ticketsServices from "@/services/tickets-service";
 import { AuthenticatedRequest } from "@/middlewares";
-
-export async function ticketsPost(req: AuthenticatedRequest, res: Response) {
-  const { userId } = req;
-  const { ticketTypeId } = req.body;
-  try {
-    const data = await ticketsServices.create(Number(userId), Number(ticketTypeId));
-
-    res.status(201).send(data);
-  } catch (error) {
-    if (error.name === "NotFoundError") {
-      return res.sendStatus(404);
-    }
-    res.sendStatus(500);
-  }
-}
+import ticketService from "@/services/tickets-service";
+import { Response } from "express";
+import httpStatus from "http-status";
 
 export async function getTicketTypes(req: AuthenticatedRequest, res: Response) {
   try {
-    const data = await ticketsServices.findTicketTypes();
+    const ticketTypes = await ticketService.getTicketTypes();
 
-    res.send(data);
+    return res.status(httpStatus.OK).send(ticketTypes);
   } catch (error) {
-    res.sendStatus(500);
+    return res.sendStatus(httpStatus.NO_CONTENT);
   }
 }
 
-export async function getTicketByUserId(req: AuthenticatedRequest, res: Response) {
+export async function getTickets(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
 
   try {
-    const ticketData = await ticketsServices.findTicketByUserId(Number(userId));
-    res.status(200).send(ticketData);
+    const ticketTypes = await ticketService.getTicketByUserId(userId);
+
+    return res.status(httpStatus.OK).send(ticketTypes);
   } catch (error) {
-    if (error.name === "NotFoundError") {
-      return res.sendStatus(404);
-    }
-    res.sendStatus(500);
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
+}
+
+export async function createTicket(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+
+  //TODO validação do JOI
+  const { ticketTypeId } = req.body;
+
+  if (!ticketTypeId) {
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+
+  try {
+    const ticketTypes = await ticketService.createTicket(userId, ticketTypeId);
+
+    return res.status(httpStatus.CREATED).send(ticketTypes);
+  } catch (error) {
+    return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
