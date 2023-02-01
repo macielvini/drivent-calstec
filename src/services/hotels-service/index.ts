@@ -6,7 +6,9 @@ import httpStatus from "http-status";
 
 async function findAll(userId: number) {
   await hasPaidTicketWithHotel(userId);
-  return await hotelRepository.findAll();
+  const data = await hotelRepository.findAll();
+  if (data.length === 0) throw httpStatus.NOT_FOUND;
+  return data;
 }
 
 async function hasPaidTicketWithHotel(userId: number) {

@@ -9,7 +9,8 @@ export async function findAll(req: AuthenticatedRequest, res: Response) {
     const data = await hotelServices.findAll(Number(userId));
     res.send(data);
   } catch (error) {
-    return res.send(error) || res.sendStatus(500);
+    if (error.name === "CustomError") return res.status(error.status).send(error.message);
+    return res.sendStatus(error) || res.sendStatus(500);
   }
 }
 
