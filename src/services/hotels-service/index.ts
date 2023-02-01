@@ -11,9 +11,10 @@ async function findAll(userId: number) {
 
 async function hasPaidTicketWithHotel(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
-  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!enrollment) throw httpStatus.NOT_FOUND;
 
-  if (!enrollment || !ticket) throw httpStatus.NOT_FOUND;
+  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!ticket) throw httpStatus.NOT_FOUND;
 
   const includesHotel = ticket.TicketType.includesHotel;
   const isPaid = ticket.status === TicketStatus.PAID;
