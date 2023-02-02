@@ -12,15 +12,21 @@ import {
 import { cleanDb, generateValidToken } from "../helpers";
 import * as jwt from "jsonwebtoken";
 import { TicketStatus } from "@prisma/client";
+import { createHotelWithRooms } from "../factories/hotels-factory";
 
 const server = supertest(app);
 
 beforeAll(async () => {
   await init();
+  await cleanDb();
 });
 
 beforeEach(async () => {
   await cleanDb();
+});
+
+afterAll(async () => {
+  cleanDb();
 });
 
 describe("GET /hotels", () => {
@@ -119,9 +125,7 @@ describe("GET /hotels", () => {
       const enrolment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeOptions(false, true);
       await createTicket(enrolment.id, ticketType.id, TicketStatus.PAID);
-
-      // TODO
-      // create hotel data with faker before get
+      await createHotelWithRooms();
 
       const response = await server.get("/hotels").set("Authorization", `Bearer ${token}`);
 
