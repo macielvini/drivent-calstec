@@ -1,6 +1,5 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "@/middlewares";
-import httpStatus from "http-status";
 import { hotelServices } from "@/services/hotels-service";
 
 export async function findAll(req: AuthenticatedRequest, res: Response) {
@@ -9,15 +8,19 @@ export async function findAll(req: AuthenticatedRequest, res: Response) {
     const data = await hotelServices.findAll(Number(userId));
     res.send(data);
   } catch (error) {
-    if (error.name === "CustomError") return res.status(error.status).send(error.message);
-    return res.sendStatus(error) || res.sendStatus(500);
+    if (isNaN(error)) return res.status(500).send(error);
+    res.sendStatus(error);
   }
 }
 
-export async function findById(eq: AuthenticatedRequest, res: Response) {
+export async function findById(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const { hotelId } = req.params;
   try {
-    res.sendStatus(httpStatus.OK);
+    const data = await hotelServices.findWithRoomsById(Number(userId), Number(hotelId));
+    res.send(data);
   } catch (error) {
-    res.sendStatus(500);
+    if (isNaN(error)) return res.status(500).send(error);
+    res.sendStatus(error);
   }
 }

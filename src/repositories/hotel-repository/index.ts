@@ -17,7 +17,7 @@ export type HotelEntity = {
   updatedAt: Date;
 };
 
-export type HotelRooms = {
+export type HotelWithRooms = {
   id: number;
   name: string;
   image: string;
@@ -31,4 +31,13 @@ async function findAll(): Promise<HotelEntity[]> {
   return data;
 }
 
-export const hotelRepository = { findAll };
+async function findWithRoomsById(id: number): Promise<HotelWithRooms> {
+  const data = await prisma.hotel.findUnique({
+    where: { id: id },
+    include: { Rooms: true },
+  });
+
+  return data;
+}
+
+export const hotelRepository = { findAll, findWithRoomsById };
