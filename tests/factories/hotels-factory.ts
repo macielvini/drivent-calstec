@@ -16,7 +16,7 @@ export async function createHotelWithRooms() {
     },
   });
 
-  await prisma.hotel.create({
+  return await prisma.hotel.create({
     data: {
       image: faker.image.business(),
       name: faker.company.companyName(),
