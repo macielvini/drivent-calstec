@@ -1,3 +1,5 @@
+import { notFoundError } from "@/errors";
+import { paymentRequired } from "@/errors/payment-required";
 import { HotelEntity, hotelRepository, HotelWithRooms } from "@/repositories/hotel-repository";
 import { TicketStatus } from "@prisma/client";
 import httpStatus from "http-status";
@@ -7,7 +9,7 @@ import ticketService from "../tickets-service";
 async function findAll(userId: number): Promise<HotelEntity[]> {
   await hasPaidTicketWithHotel(userId);
   const data = await hotelRepository.findAll();
-  if (data.length === 0) throw httpStatus.NOT_FOUND;
+  if (data.length === 0) throw notFoundError();
   return data;
 }
 
@@ -28,7 +30,7 @@ async function hasPaidTicketWithHotel(userId: number) {
   const isPaid = ticket.status === TicketStatus.PAID;
   const isRemote = ticket.TicketType.isRemote;
 
-  if (!includesHotel || !isPaid || isRemote) throw httpStatus.PAYMENT_REQUIRED;
+  if (!includesHotel || !isPaid || isRemote) throw paymentRequired();
 }
 
 export const hotelServices = { findAll, findWithRoomsById };
