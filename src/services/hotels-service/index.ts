@@ -1,8 +1,8 @@
-import enrollmentRepository from "@/repositories/enrollment-repository";
 import { HotelEntity, hotelRepository, HotelWithRooms } from "@/repositories/hotel-repository";
-import ticketRepository from "@/repositories/ticket-repository";
 import { TicketStatus } from "@prisma/client";
 import httpStatus from "http-status";
+import enrollmentsService from "../enrollments-service";
+import ticketService from "../tickets-service";
 
 async function findAll(userId: number): Promise<HotelEntity[]> {
   await hasPaidTicketWithHotel(userId);
@@ -21,11 +21,8 @@ async function findWithRoomsById(userId: number, hotelId: number): Promise<Hotel
 }
 
 async function hasPaidTicketWithHotel(userId: number) {
-  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
-  if (!enrollment) throw httpStatus.NOT_FOUND;
-
-  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
-  if (!ticket) throw httpStatus.NOT_FOUND;
+  await enrollmentsService.getOneWithAddressByUserId(userId);
+  const ticket = await ticketService.getTicketByUserId(userId);
 
   const includesHotel = ticket.TicketType.includesHotel;
   const isPaid = ticket.status === TicketStatus.PAID;

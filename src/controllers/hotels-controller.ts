@@ -8,6 +8,7 @@ export async function findAll(req: AuthenticatedRequest, res: Response) {
     const data = await hotelServices.findAll(Number(userId));
     res.send(data);
   } catch (error) {
+    if (error.name === "NotFoundError") return res.sendStatus(404);
     if (isNaN(error)) return res.status(500).send(error);
     res.sendStatus(error);
   }
@@ -20,6 +21,7 @@ export async function findById(req: AuthenticatedRequest, res: Response) {
     const data = await hotelServices.findWithRoomsById(Number(userId), Number(hotelId));
     res.send(data);
   } catch (error) {
+    if (error.name === "NotFoundError") return res.sendStatus(404);
     if (isNaN(error)) return res.status(500).send(error);
     res.sendStatus(error);
   }
