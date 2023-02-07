@@ -13,7 +13,7 @@ export async function bookingPost(req: AuthenticatedRequest, res: Response) {
   try {
     const data = await bookingService.createOne(userId, roomId);
 
-    res.status(200).send(data.id);
+    res.status(200).send({ bookingId: data.id });
   } catch (error) {
     if (error.name === "NotFoundError") return res.status(404).send(error);
     if (error.name === "RoomIsFullError") return res.status(403).send(error);
