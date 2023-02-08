@@ -17,6 +17,7 @@ export async function bookingPost(req: AuthenticatedRequest, res: Response) {
   } catch (error) {
     if (error.name === "NotFoundError") return res.status(404).send(error);
     if (error.name === "RoomIsFullError") return res.status(403).send(error);
+    if (error.name === "PaymentRequired") return res.status(402).send(error);
 
     return res.sendStatus(500);
   }
