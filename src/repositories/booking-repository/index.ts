@@ -17,13 +17,13 @@ async function createOne(booking: BookingParams): Promise<Booking> {
   });
 }
 
-async function findBookingByUserId(id: number): Promise<BookingWithRoom> {
+async function findBookingByUserId(id: number): Promise<BookingWithRoom | null> {
   const booking = await prisma.booking.findFirst({
     where: { userId: id },
     include: { Room: true },
   });
 
-  return { id: booking.id, Room: booking.Room };
+  return booking;
 }
 
 async function countRoomBookings(roomId: number) {

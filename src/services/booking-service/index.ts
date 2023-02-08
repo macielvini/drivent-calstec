@@ -14,11 +14,11 @@ async function createOne(userId: number, roomId: number): Promise<Booking> {
 }
 
 async function findBookingByUserId(userId: number) {
-  const data = await bookingRepository.findBookingByUserId(userId);
+  const booking = await bookingRepository.findBookingByUserId(userId);
 
-  if (!data) throw notFoundError();
+  if (!booking) throw notFoundError();
 
-  return data;
+  return { id: booking.id, Room: booking.Room };
 }
 
 async function verifyTicketRemotePaidIncludesHotel(userId: number) {
