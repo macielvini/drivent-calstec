@@ -1,3 +1,4 @@
+import { notFoundError } from "@/errors";
 import { paymentRequired } from "@/errors/payment-required";
 import { roomIsFullError } from "@/errors/room-is-full-error";
 import bookingRepository from "@/repositories/booking-repository";
@@ -10,6 +11,14 @@ async function createOne(userId: number, roomId: number): Promise<Booking> {
   await verifyRoomCapacity(roomId);
 
   return await bookingRepository.createOne({ userId, roomId });
+}
+
+async function findBookingByUserId(userId: number) {
+  const data = await bookingRepository.findBookingByUserId(userId);
+
+  if (!data) throw notFoundError();
+
+  return data;
 }
 
 async function verifyTicketRemotePaidIncludesHotel(userId: number) {
@@ -29,5 +38,5 @@ async function verifyRoomCapacity(roomId: number) {
   if (bookings >= room.capacity) throw roomIsFullError();
 }
 
-const bookingService = { createOne };
+const bookingService = { createOne, findBookingByUserId };
 export default bookingService;

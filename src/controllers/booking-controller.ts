@@ -17,3 +17,14 @@ export async function bookingPost(req: AuthenticatedRequest, res: Response) {
     handleApplicationErrors(error, req, res);
   }
 }
+
+export async function bookingGet(req: AuthenticatedRequest, res: Response) {
+  const userId = Number(req.userId);
+
+  try {
+    const data = await bookingService.findBookingByUserId(userId);
+    res.status(200).send(data);
+  } catch (error) {
+    handleApplicationErrors(error, req, res);
+  }
+}
