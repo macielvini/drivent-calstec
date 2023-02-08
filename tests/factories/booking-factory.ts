@@ -20,3 +20,12 @@ export async function createBookingWithRoomFull(hotelId: number) {
 
   return room;
 }
+
+export async function createBooking(userId: number, roomId: number) {
+  return await prisma.booking.create({
+    data: {
+      Room: { connect: { id: roomId } },
+      User: { connect: { id: userId } },
+    },
+  });
+}
