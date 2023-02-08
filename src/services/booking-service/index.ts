@@ -1,4 +1,4 @@
-import { notFoundError } from "@/errors";
+import { notFoundError, unauthorizedError } from "@/errors";
 import { paymentRequired } from "@/errors/payment-required";
 import { roomIsFullError } from "@/errors/room-is-full-error";
 import bookingRepository from "@/repositories/booking-repository";
@@ -21,6 +21,22 @@ async function findBookingByUserId(userId: number) {
   return { id: booking.id, Room: booking.Room };
 }
 
+export type BookingUpdateInput = {
+  userId: number;
+  bookingId: number;
+  roomId: number;
+};
+
+async function updateBookingRoom(params: BookingUpdateInput) {
+  const booking = await bookingRepository.findBookingByUserId(params.userId);
+
+  if (!booking) throw notFoundError();
+  if (booking.id !== params.bookingId) throw unauthorizedError();
+  await verifyRoomCapacity(params.roomId);
+
+  return await bookingRepository.updateBookingRoom(params.bookingId, params.roomId);
+}
+
 async function verifyTicketRemotePaidIncludesHotel(userId: number) {
   const ticket = await ticketService.getTicketByUserId(userId);
 
@@ -35,8 +51,9 @@ async function verifyRoomCapacity(roomId: number) {
   const bookings = await bookingRepository.countRoomBookings(roomId);
   const room = await hotelRepository.findRoomById(roomId);
 
+  if (!room) throw notFoundError();
   if (bookings >= room.capacity) throw roomIsFullError();
 }
 
-const bookingService = { createOne, findBookingByUserId };
+const bookingService = { createOne, findBookingByUserId, updateBookingRoom };
 export default bookingService;
