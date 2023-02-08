@@ -12,5 +12,11 @@ async function createOne(booking: BookingParams): Promise<Booking> {
   });
 }
 
-const bookingRepository = { createOne };
+async function countRoomBookings(roomId: number) {
+  return await prisma.booking.count({
+    where: { roomId: roomId },
+  });
+}
+
+const bookingRepository = { createOne, countRoomBookings };
 export default bookingRepository;
