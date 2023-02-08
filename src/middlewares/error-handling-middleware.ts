@@ -22,7 +22,7 @@ export function handleApplicationErrors(err: ApplicationError | Error, _req: Req
   }
 
   if (err.name === "RoomIsFullError") {
-    return res.status(httpStatus.PAYMENT_REQUIRED).send({
+    return res.status(httpStatus.FORBIDDEN).send({
       message: err.message,
     });
   }
